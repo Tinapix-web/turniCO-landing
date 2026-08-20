@@ -34,8 +34,7 @@ function doPost(e) {
   try {
     const datos = JSON.parse(e.postData.contents);
     const hoja = obtenerHoja();
-    hoja.appendRow([
-      new Date(),
+    const valores = [
       comoTexto(datos.nombre),
       comoTexto(datos.whatsapp),
       comoTexto(datos.email),
@@ -49,7 +48,18 @@ function doPost(e) {
       comoTexto(datos.resultadoCalculado),
       comoTexto(Array.isArray(datos.recomendaciones) ? datos.recomendaciones.join(', ') : ''),
       comoTexto(datos.fecha)
-    ]);
+    ];
+
+    // Escritura manual (no appendRow): se formatean las celdas de texto
+    // como Plain Text ANTES de escribirlas, en la fila exacta, con
+    // setValues — mismo patrón que ya usás para fecha/hora en tu app de
+    // turnos. La columna A queda aparte porque es una fecha real (Date).
+    const fila = hoja.getLastRow() + 1;
+    hoja.getRange(fila, 1).setValue(new Date());
+    const rangoTexto = hoja.getRange(fila, 2, 1, valores.length);
+    rangoTexto.setNumberFormat('@');
+    rangoTexto.setValues([valores]);
+
     return ContentService.createTextOutput(JSON.stringify({ ok: true }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
