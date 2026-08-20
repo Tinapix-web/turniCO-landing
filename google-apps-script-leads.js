@@ -20,25 +20,35 @@
 
 const NOMBRE_HOJA = 'Leads';
 
+// Fuerza un valor a texto literal anteponiendo un apóstrofe — el mismo
+// truco que usa Sheets cuando lo tipeás a mano. Sin esto, un WhatsApp como
+// "+54 9..." se interpreta como el inicio de una fórmula y queda #ERROR!.
+// setNumberFormat('@') NO alcanza para evitar esto: esa detección pasa al
+// momento de escribir el valor, no depende del formato de la celda.
+function comoTexto(valor) {
+  if (valor === null || valor === undefined || valor === '') return '';
+  return "'" + String(valor);
+}
+
 function doPost(e) {
   try {
     const datos = JSON.parse(e.postData.contents);
     const hoja = obtenerHoja();
     hoja.appendRow([
       new Date(),
-      datos.nombre || '',
-      datos.whatsapp || '',
-      datos.email || '',
-      datos.negocio || '',
-      datos.actividad || '',
-      datos.cantidadTurnos || '',
-      datos.cantidadProfesionales || '',
-      Array.isArray(datos.sistemaActual) ? datos.sistemaActual.join(', ') : '',
-      datos.tiempoDedicado || '',
-      Array.isArray(datos.problemas) ? datos.problemas.join(', ') : '',
-      datos.resultadoCalculado || '',
-      Array.isArray(datos.recomendaciones) ? datos.recomendaciones.join(', ') : '',
-      datos.fecha || ''
+      comoTexto(datos.nombre),
+      comoTexto(datos.whatsapp),
+      comoTexto(datos.email),
+      comoTexto(datos.negocio),
+      comoTexto(datos.actividad),
+      comoTexto(datos.cantidadTurnos),
+      comoTexto(datos.cantidadProfesionales),
+      comoTexto(Array.isArray(datos.sistemaActual) ? datos.sistemaActual.join(', ') : ''),
+      comoTexto(datos.tiempoDedicado),
+      comoTexto(Array.isArray(datos.problemas) ? datos.problemas.join(', ') : ''),
+      comoTexto(datos.resultadoCalculado),
+      comoTexto(Array.isArray(datos.recomendaciones) ? datos.recomendaciones.join(', ') : ''),
+      comoTexto(datos.fecha)
     ]);
     return ContentService.createTextOutput(JSON.stringify({ ok: true }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -59,10 +69,5 @@ function obtenerHoja() {
       'Problemas', 'Resultado calculado', 'Recomendaciones', 'Fecha simulador'
     ]);
   }
-  // Fuerza texto plano en toda la hoja: sin esto, un WhatsApp como "+54 9..."
-  // se interpreta como el inicio de una fórmula y la celda queda en #ERROR!.
-  // Se repite en cada request (no solo al crear la hoja) para que también
-  // corrija una hoja ya existente que se haya creado sin este formato.
-  hoja.getRange('A:N').setNumberFormat('@');
   return hoja;
 }
