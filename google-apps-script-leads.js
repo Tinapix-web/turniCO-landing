@@ -59,5 +59,10 @@ function obtenerHoja() {
       'Problemas', 'Resultado calculado', 'Recomendaciones', 'Fecha simulador'
     ]);
   }
+  // Fuerza texto plano en toda la hoja: sin esto, un WhatsApp como "+54 9..."
+  // se interpreta como el inicio de una fórmula y la celda queda en #ERROR!.
+  // Se repite en cada request (no solo al crear la hoja) para que también
+  // corrija una hoja ya existente que se haya creado sin este formato.
+  hoja.getRange('A:N').setNumberFormat('@');
   return hoja;
 }

@@ -1427,10 +1427,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }catch(e){ /* localStorage no disponible: no bloquea el flujo */ }
 
     if(CONFIG.leadsWebhookUrl){
+      // Content-Type "text/plain" a propósito: en modo no-cors el navegador
+      // no respeta "application/json" y termina mandando el texto con una
+      // codificación rota (tildes, guiones, etc). Apps Script igual lee
+      // e.postData.contents como JSON sin problema.
       fetch(CONFIG.leadsWebhookUrl, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(datos)
       }).catch(() => {});
     }
