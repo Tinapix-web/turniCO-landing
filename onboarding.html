@@ -187,6 +187,16 @@
           <input type="text" id="negocioFacebook" placeholder="facebook.com/tunegocio">
         </div>
       </div>
+      <div class="grid2">
+        <div class="campo">
+          <label>TikTok <span class="ayuda">(opcional)</span></label>
+          <input type="text" id="negocioTiktok" placeholder="@tunegocio">
+        </div>
+        <div class="campo">
+          <label>Otra red social <span class="ayuda">(opcional)</span></label>
+          <input type="text" id="negocioOtraRed" placeholder="Ej: X, YouTube, tu sitio web...">
+        </div>
+      </div>
     </div>
 
     <!-- IDENTIDAD VISUAL -->
@@ -203,9 +213,18 @@
           <div class="color-fila"><input type="color" id="colorSecundario" value="#D4C9B6"><span id="colorSecundarioTxt">#D4C9B6</span></div>
         </div>
       </div>
+      <div class="campo">
+        <label>Logo de tu negocio <span class="ayuda">(opcional)</span></label>
+        <input type="file" id="logoArchivo" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <div id="logoPreviewWrap" style="display:none;margin-top:14px;align-items:center;gap:14px;">
+          <img id="logoPreview" style="width:76px;height:76px;object-fit:contain;border-radius:14px;border:1.5px solid var(--borde);background:#fff;padding:6px;">
+          <span id="logoPreviewNombre" style="font-size:.85rem;color:var(--texto-suave);"></span>
+        </div>
+        <div class="error-campo" id="errorLogo">El archivo pesa demasiado — probá con uno de menos de 5MB, o nos lo mandás después por WhatsApp.</div>
+      </div>
       <div class="logo-aviso">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
-        <div>El <strong>logo</strong> nos lo mandás por WhatsApp o email después de enviar este formulario — así se ve con la mejor calidad posible.</div>
+        <div>Si no lo tenés a mano ahora, no hay drama: podés dejarlo vacío y mandarlo después por WhatsApp.</div>
       </div>
     </div>
 
@@ -248,10 +267,12 @@
 
     <!-- PLAN -->
     <div class="seccion">
-      <h2>Plan contratado</h2>
+      <h2>Plan</h2>
+      <div class="desc">Después de los 14 días de prueba, elegís si seguís con Setup único o Plan mensual.</div>
       <div class="radio-plan">
-        <label><input type="radio" name="plan" value="Setup único" checked><span><strong>Setup único</strong><span class="txt">Pago único, sin mensualidades</span></span></label>
-        <label><input type="radio" name="plan" value="Plan mensual"><span><strong>Plan mensual</strong><span class="txt">Con soporte y mejoras continuas</span></span></label>
+        <label><input type="radio" name="plan" value="Prueba gratis (14 días)" id="radioPrueba"><span><strong>🎁 Prueba gratis</strong><span class="txt">14 días, sin compromiso</span></span></label>
+        <label><input type="radio" name="plan" value="Setup único" id="radioSetup" checked><span><strong>Setup único</strong><span class="txt">Pago único, sin mensualidades</span></span></label>
+        <label><input type="radio" name="plan" value="Plan mensual" id="radioMensual"><span><strong>Plan mensual</strong><span class="txt">Con soporte y mejoras continuas</span></span></label>
       </div>
     </div>
 
@@ -360,17 +381,54 @@ function renderServicios(){
   `).join('');
 }
 
+const LOGO_MAX_BYTES = 5 * 1024 * 1024; // 5MB
+let logoArchivoInfo = null; // { base64, nombre, tipo }
+
+function leerArchivoComoBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]); // saca el prefijo data:...;base64,
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnAgregarSucursal').addEventListener('click', agregarSucursal);
   document.getElementById('btnAgregarServicio').addEventListener('click', agregarServicio);
   agregarSucursal();
   agregarServicio();
 
+  // preseleccionar plan si vienen desde el botón "Abrir usuario" (?plan=trial)
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('plan') === 'trial') document.getElementById('radioPrueba').checked = true;
+
   document.getElementById('colorPrimario').addEventListener('input', e => document.getElementById('colorPrimarioTxt').textContent = e.target.value.toUpperCase());
   document.getElementById('colorSecundario').addEventListener('input', e => document.getElementById('colorSecundarioTxt').textContent = e.target.value.toUpperCase());
 
-  document.getElementById('formOnboarding').addEventListener('submit', (e) => {
+  document.getElementById('logoArchivo').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    document.getElementById('errorLogo').style.display = 'none';
+    logoArchivoInfo = null;
+    document.getElementById('logoPreviewWrap').style.display = 'none';
+    if(!file) return;
+    if(file.size > LOGO_MAX_BYTES){
+      document.getElementById('errorLogo').style.display = 'block';
+      e.target.value = '';
+      return;
+    }
+    const base64 = await leerArchivoComoBase64(file);
+    logoArchivoInfo = { base64, nombre: file.name, tipo: file.type };
+    document.getElementById('logoPreview').src = 'data:' + file.type + ';base64,' + base64;
+    document.getElementById('logoPreviewNombre').textContent = file.name;
+    document.getElementById('logoPreviewWrap').style.display = 'flex';
+  });
+
+  document.getElementById('formOnboarding').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const btn = document.getElementById('btnEnviar');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
 
     const datos = {
       contactoNombre: document.getElementById('contactoNombre').value.trim(),
@@ -381,6 +439,8 @@ document.addEventListener('DOMContentLoaded', () => {
       negocioTagline: document.getElementById('negocioTagline').value.trim(),
       negocioInstagram: document.getElementById('negocioInstagram').value.trim(),
       negocioFacebook: document.getElementById('negocioFacebook').value.trim(),
+      negocioTiktok: document.getElementById('negocioTiktok').value.trim(),
+      negocioOtraRed: document.getElementById('negocioOtraRed').value.trim(),
       colorPrimario: document.getElementById('colorPrimario').value,
       colorSecundario: document.getElementById('colorSecundario').value,
       sucursales: sucursales.map(s => ({ nombre:s.nombre, direccion:s.direccion, barrio:s.barrio, dias:s.dias, apertura:s.apertura, cierre:s.cierre, duracion:s.duracion })),
@@ -388,37 +448,50 @@ document.addEventListener('DOMContentLoaded', () => {
       equipoCantidad: document.getElementById('equipoCantidad').value,
       equipoNombres: document.getElementById('equipoNombres').value.trim(),
       plan: document.querySelector('input[name="plan"]:checked').value,
+      logoBase64: logoArchivoInfo ? logoArchivoInfo.base64 : '',
+      logoNombre: logoArchivoInfo ? logoArchivoInfo.nombre : '',
+      logoTipo: logoArchivoInfo ? logoArchivoInfo.tipo : '',
       fecha: new Date().toISOString()
     };
 
-    guardarCliente(datos);
+    await guardarCliente(datos);
 
     document.getElementById('formOnboarding').style.display = 'none';
     document.getElementById('pantallaGracias').style.display = 'block';
     document.getElementById('graciasNombre').textContent = datos.negocioNombre;
 
-    const msg = `Hola! Ya completé el formulario de alta para ${datos.negocioNombre}. Te mando el logo por acá 📎`;
+    const yaTieneLogo = !!logoArchivoInfo;
+    document.getElementById('pantallaGracias').querySelector('p').innerHTML = yaTieneLogo
+      ? `Ya tenemos los datos de <strong>${datos.negocioNombre}</strong>, logo incluido. Te contactamos en breve para coordinar el resto.`
+      : `Ya tenemos los datos de <strong>${datos.negocioNombre}</strong>. Si todavía no mandaste el logo, nos lo podés pasar por acá.`;
+    if(yaTieneLogo) document.getElementById('btnGraciasWhatsapp').style.display = 'none';
+
+    const msg = `Hola! Ya completé el formulario de alta para ${datos.negocioNombre}.${yaTieneLogo ? '' : ' Te mando el logo por acá 📎'}`;
     document.getElementById('btnGraciasWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(msg)}`;
     window.scrollTo(0,0);
   });
 });
 
-function guardarCliente(datos){
+async function guardarCliente(datos){
   try{
+    // no guardamos el base64 del logo en localStorage para no llenarlo de golpe
+    const { logoBase64, ...datosLivianos } = datos;
     const clientes = JSON.parse(localStorage.getItem('turnico_clientes') || '[]');
-    clientes.push(datos);
+    clientes.push(datosLivianos);
     localStorage.setItem('turnico_clientes', JSON.stringify(clientes));
   }catch(e){}
 
   if(CONFIG.clientesWebhookUrl){
-    fetch(CONFIG.clientesWebhookUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(datos)
-    }).catch(() => {});
+    try{
+      await fetch(CONFIG.clientesWebhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(datos)
+      });
+    }catch(e){}
   }
-  console.log('[TurniCO] Nueva alta de cliente:', datos);
+  console.log('[TurniCO] Nueva alta de cliente:', { ...datos, logoBase64: datos.logoBase64 ? '(omitido en el log)' : '' });
 }
 </script>
 

@@ -280,6 +280,10 @@
 
   /* precios */
   .precios{ background: var(--bg-alt); }
+  .banner-prueba{ background:#fff; border:1.5px solid var(--primario); border-radius:20px; padding:26px 30px; display:flex; align-items:center; justify-content:space-between; gap:22px; flex-wrap:wrap; margin-bottom:34px; box-shadow: var(--sombra-chica); }
+  .banner-prueba .texto strong{ font-size:1.08rem; color:var(--texto); display:block; margin-bottom:4px; }
+  .banner-prueba .texto span{ font-size:.9rem; color:var(--texto-suave); }
+  .banner-prueba .btn{ flex-shrink:0; }
   .grid-precios{ display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:stretch; }
   .card-precio{ background:#fff; border:1px solid var(--borde); border-radius: 20px; padding:36px 30px; display:flex; flex-direction:column; position:relative; }
   .card-precio.destacado{ border:2px solid var(--primario); box-shadow: var(--sombra); }
@@ -704,6 +708,14 @@
       <div class="kicker" style="margin-left:auto; margin-right:auto;">Planes y precios</div>
       <h2 class="titulo-seccion centrado">Elegí cómo querés trabajar conmigo</h2>
       <p class="texto-seccion centrado">Sin letra chica. Sin contratos forzados. Vos decidís si querés independencia total o acompañamiento continuo.</p>
+    </div>
+
+    <div class="banner-prueba reveal">
+      <div class="texto">
+        <strong>🎁 ¿Preferís probarlo primero?</strong>
+        <span>Abrí tu usuario gratis por 14 días, sin tarjeta ni compromiso. Después, elegís tu plan.</span>
+      </div>
+      <a href="onboarding.html?plan=trial" class="btn btn-solido">Abrir usuario gratis</a>
     </div>
 
     <div class="grid-precios">
