@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario de alta — TurniCO</title>
+<meta name="description" content="Completá los datos de tu negocio para que armemos tu app de turnos.">
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --primario:#3F5C4C;
+    --primario-oscuro:#2C4136;
+    --celeste:#D4C9B6;
+    --celeste-oscuro:#9C8B6B;
+    --celeste-tinta:#F3EEE4;
+    --primario-tinta:#E8EDE7;
+    --whatsapp:#25d366;
+    --whatsapp-dark:#1da851;
+    --bg:#ffffff;
+    --bg-alt:#F7F3ED;
+    --borde:#E8EDE7;
+    --texto:#1F1F1F;
+    --texto-suave:#5c5c56;
+    --texto-claro:#95968f;
+    --rojo-bg:#fdeceb; --rojo-texto:#c23a34;
+    --sombra: 0 24px 48px -22px rgba(31,31,31,0.18);
+    --sombra-chica: 0 10px 26px -14px rgba(31,31,31,0.14);
+    --radio: 18px;
+    --radio-chico: 12px;
+    --radio-btn: 12px;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family: var(--sans); color: var(--texto); background: var(--bg-alt); line-height:1.6; -webkit-font-smoothing:antialiased; }
+  img,svg{ display:block; max-width:100%; }
+  a{ color:inherit; }
+  h1,h2,h3{ font-family: var(--serif); font-weight:500; color: var(--texto); line-height:1.15; }
+
+  .contenedor{ width:100%; max-width:760px; margin:0 auto; padding:0 24px; }
+
+  header{ background: var(--primario); padding:44px 0 40px; }
+  .logo{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.15rem; color:#fff; }
+  .logo .punto{ width:9px; height:9px; border-radius:50%; background: var(--celeste); }
+  header h1{ color:#fff; font-size: clamp(1.7rem,4vw,2.3rem); margin-top:18px; max-width:600px; }
+  header p{ color: rgba(255,255,255,.75); margin-top:10px; font-size:1rem; max-width:560px; }
+
+  main{ padding:44px 0 100px; }
+  .seccion{ background:#fff; border:1px solid var(--borde); border-radius: var(--radio); padding:32px 28px; margin-bottom:22px; }
+  .seccion h2{ font-size:1.5rem; margin-bottom:6px; }
+  .seccion .desc{ font-size:.92rem; color: var(--texto-suave); margin-bottom:24px; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .campo{ margin-bottom:18px; }
+  .campo:last-child{ margin-bottom:0; }
+  .campo label{ display:block; font-size:.85rem; font-weight:700; color: var(--texto); margin-bottom:7px; }
+  .campo .ayuda{ font-size:.78rem; color: var(--texto-claro); font-weight:400; margin-left:6px; }
+  .campo input[type="text"], .campo input[type="email"], .campo input[type="tel"], .campo input[type="time"], .campo select, .campo textarea{
+    width:100%; padding:13px 15px; border-radius: var(--radio-btn); border:1.5px solid var(--borde);
+    font-family:inherit; font-size:.95rem; color: var(--texto); background:#fff;
+  }
+  .campo input:focus, .campo select:focus, .campo textarea:focus{ outline:none; border-color: var(--primario); }
+  .campo textarea{ resize:vertical; min-height:80px; }
+  .campo input[type="color"]{ width:64px; height:44px; border:1.5px solid var(--borde); border-radius:10px; padding:3px; background:#fff; cursor:pointer; }
+  .color-fila{ display:flex; align-items:center; gap:14px; }
+  .color-fila span{ font-size:.85rem; color:var(--texto-suave); font-family:monospace; }
+
+  .dias{ display:flex; gap:8px; flex-wrap:wrap; }
+  .dia-chip{ width:44px; height:44px; border-radius:50%; border:1.5px solid var(--borde); display:flex; align-items:center; justify-content:center; font-size:.82rem; font-weight:700; cursor:pointer; color:var(--texto-suave); transition: all .15s ease; user-select:none; }
+  .dia-chip.activo{ background: var(--primario); border-color: var(--primario); color:#fff; }
+
+  .tarjeta-item{ background: var(--bg-alt); border:1px solid var(--borde); border-radius: var(--radio-chico); padding:22px; margin-bottom:16px; position:relative; }
+  .tarjeta-item .num{ position:absolute; top:-12px; left:18px; background: var(--primario); color:#fff; font-size:.72rem; font-weight:800; padding:4px 12px; border-radius:100px; }
+  .tarjeta-item .eliminar{ position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; background:#fff; border:1px solid var(--borde); color: var(--rojo-texto); font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.9rem; }
+
+  .btn-agregar{ display:inline-flex; align-items:center; gap:8px; background: var(--primario-tinta); color: var(--primario); font-weight:700; font-size:.9rem; padding:12px 20px; border-radius:100px; cursor:pointer; border:none; font-family:inherit; }
+  .btn-agregar:hover{ background: var(--celeste-tinta); }
+
+  .radio-plan{ display:flex; gap:14px; flex-wrap:wrap; }
+  .radio-plan label{ flex:1; min-width:220px; display:flex; align-items:flex-start; gap:12px; border:1.5px solid var(--borde); border-radius: var(--radio-chico); padding:16px 18px; cursor:pointer; font-size:.85rem; }
+  .radio-plan input{ margin-top:3px; accent-color: var(--primario); }
+  .radio-plan strong{ display:block; font-size:.95rem; margin-bottom:3px; }
+  .radio-plan span.txt{ color: var(--texto-suave); }
+
+  .logo-aviso{ background: var(--celeste-tinta); border-radius: var(--radio-chico); padding:18px 20px; font-size:.88rem; color: var(--texto-suave); display:flex; align-items:center; gap:12px; }
+  .logo-aviso svg{ flex-shrink:0; color: var(--celeste-oscuro); }
+
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:16px 30px; border-radius: var(--radio-btn); font-weight:700; font-size:1rem; border:none; font-family:inherit; cursor:pointer; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+  .btn-primario{ background: var(--primario); color:#fff; width:100%; box-shadow: 0 14px 26px -12px rgba(63,92,76,.5); }
+  .btn-primario:hover{ background: var(--primario-oscuro); transform:translateY(-2px); }
+  .btn-primario:disabled{ opacity:.5; pointer-events:none; }
+  .btn-whatsapp{ background: var(--whatsapp); color:#fff; }
+  .btn-whatsapp:hover{ background: var(--whatsapp-dark); }
+
+  .error-campo{ color: var(--rojo-texto); font-size:.78rem; margin-top:6px; display:none; }
+
+  #pantallaGracias{ display:none; text-align:center; padding:60px 20px; }
+  #pantallaGracias .check{ width:80px; height:80px; border-radius:50%; background: var(--primario-tinta); color: var(--primario); display:flex; align-items:center; justify-content:center; margin:0 auto 24px; }
+  #pantallaGracias h2{ font-size:1.8rem; margin-bottom:14px; }
+  #pantallaGracias p{ color: var(--texto-suave); max-width:440px; margin:0 auto 30px; }
+
+  @media (max-width:600px){
+    .grid2{ grid-template-columns:1fr; }
+    .seccion{ padding:26px 20px; }
+    header{ padding:36px 0 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenedor">
+    <div class="logo"><span class="punto"></span>TurniCO</div>
+    <h1>Vamos a armar tu app de turnos</h1>
+    <p>Completá estos datos con calma — es todo lo que necesitamos para dejarte la app lista con tu marca, tus sucursales y tus servicios apenas te demos acceso.</p>
+  </div>
+</header>
+
+<main class="contenedor">
+  <form id="formOnboarding">
+
+    <!-- CONTACTO -->
+    <div class="seccion">
+      <h2>Tus datos de contacto</h2>
+      <div class="desc">Para coordinar la entrega y cualquier consulta durante el armado.</div>
+      <div class="grid2">
+        <div class="campo">
+          <label>Nombre y apellido</label>
+          <input type="text" id="contactoNombre" required>
+        </div>
+        <div class="campo">
+          <label>WhatsApp</label>
+          <input type="tel" id="contactoWhatsapp" placeholder="+54 9 11 ..." required>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Email</label>
+        <input type="email" id="contactoEmail" required>
+      </div>
+    </div>
+
+    <!-- NEGOCIO -->
+    <div class="seccion">
+      <h2>Tu negocio</h2>
+      <div class="desc">Lo que va a ver tu cliente cuando entre a reservar un turno.</div>
+      <div class="campo">
+        <label>Nombre del negocio</label>
+        <input type="text" id="negocioNombre" placeholder="Ej: Centro Estética Bella" required>
+      </div>
+      <div class="grid2">
+        <div class="campo">
+          <label>Rubro</label>
+          <select id="negocioRubro" required>
+            <option value="">Elegí una opción</option>
+            <option>Peluquería</option>
+            <option>Barbería</option>
+            <option>Uñas / Manicuría</option>
+            <option>Estética</option>
+            <option>Tatuajes</option>
+            <option>Consultorio</option>
+            <option>Pilates / Yoga</option>
+            <option>Masajes</option>
+            <option>Entrenamiento</option>
+            <option>Clases particulares</option>
+            <option>Veterinaria</option>
+            <option>Fotografía</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Eslogan o frase corta <span class="ayuda">(opcional)</span></label>
+          <input type="text" id="negocioTagline" placeholder="Ej: Belleza y bienestar">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="campo">
+          <label>Instagram</label>
+          <input type="text" id="negocioInstagram" placeholder="@tunegocio">
+        </div>
+        <div class="campo">
+          <label>Facebook <span class="ayuda">(opcional)</span></label>
+          <input type="text" id="negocioFacebook" placeholder="facebook.com/tunegocio">
+        </div>
+      </div>
+    </div>
+
+    <!-- IDENTIDAD VISUAL -->
+    <div class="seccion">
+      <h2>Identidad visual</h2>
+      <div class="desc">Los colores principales de tu marca. No hace falta el código exacto, con elegir el tono aproximado alcanza.</div>
+      <div class="grid2">
+        <div class="campo">
+          <label>Color principal</label>
+          <div class="color-fila"><input type="color" id="colorPrimario" value="#3F5C4C"><span id="colorPrimarioTxt">#3F5C4C</span></div>
+        </div>
+        <div class="campo">
+          <label>Color secundario</label>
+          <div class="color-fila"><input type="color" id="colorSecundario" value="#D4C9B6"><span id="colorSecundarioTxt">#D4C9B6</span></div>
+        </div>
+      </div>
+      <div class="logo-aviso">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div>El <strong>logo</strong> nos lo mandás por WhatsApp o email después de enviar este formulario — así se ve con la mejor calidad posible.</div>
+      </div>
+    </div>
+
+    <!-- SUCURSALES -->
+    <div class="seccion">
+      <h2>Sucursales o lugares de atención</h2>
+      <div class="desc">Agregá al menos una. Si atendés en un solo lugar, con esa alcanza.</div>
+      <div id="listaSucursales"></div>
+      <button type="button" class="btn-agregar" id="btnAgregarSucursal">+ Agregar sucursal</button>
+    </div>
+
+    <!-- SERVICIOS -->
+    <div class="seccion">
+      <h2>Servicios o tratamientos</h2>
+      <div class="desc">Los que tus clientes van a poder elegir al reservar.</div>
+      <div id="listaServicios"></div>
+      <button type="button" class="btn-agregar" id="btnAgregarServicio">+ Agregar servicio</button>
+    </div>
+
+    <!-- EQUIPO -->
+    <div class="seccion">
+      <h2>Tu equipo</h2>
+      <div class="grid2">
+        <div class="campo">
+          <label>¿Cuántas personas atienden turnos?</label>
+          <select id="equipoCantidad">
+            <option>Solo yo</option>
+            <option>2 personas</option>
+            <option>3–5 personas</option>
+            <option>6–10 personas</option>
+            <option>Más de 10</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Nombres <span class="ayuda">(opcional)</span></label>
+          <input type="text" id="equipoNombres" placeholder="Separados por coma">
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="seccion">
+      <h2>Plan contratado</h2>
+      <div class="radio-plan">
+        <label><input type="radio" name="plan" value="Setup único" checked><span><strong>Setup único</strong><span class="txt">Pago único, sin mensualidades</span></span></label>
+        <label><input type="radio" name="plan" value="Plan mensual"><span><strong>Plan mensual</strong><span class="txt">Con soporte y mejoras continuas</span></span></label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primario" id="btnEnviar">Enviar mis datos</button>
+  </form>
+
+  <div id="pantallaGracias">
+    <div class="check"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h2>¡Recibimos todo!</h2>
+    <p>Ya tenemos los datos de <strong id="graciasNombre"></strong>. Ahora mandanos el logo por WhatsApp para terminar de armar tu app.</p>
+    <a href="#" id="btnGraciasWhatsapp" class="btn btn-whatsapp" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.85 1h.01a7.94 7.94 0 0 0 5.54-13.58Z"/></svg>
+      Mandar el logo por WhatsApp
+    </a>
+  </div>
+</main>
+
+<script>
+const CONFIG = {
+  whatsappNumero: "5491135883077",
+  // URL de un Google Apps Script (Web App) publicado, con una hoja "Clientes".
+  // Ver google-apps-script-clientes.js para el código listo para pegar.
+  clientesWebhookUrl: ""
+};
+
+const DURACIONES = ["15 min","20 min","30 min","45 min","60 min","90 min","120 min"];
+const DIAS = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+
+let sucursales = [];
+let servicios = [];
+let contadorSuc = 0;
+let contadorServ = 0;
+
+function agregarSucursal(){
+  const id = contadorSuc++;
+  sucursales.push({ id, nombre:"", direccion:"", barrio:"", dias:[1,2,3,4,5], apertura:"09:00", cierre:"19:00", duracion:"30 min" });
+  renderSucursales();
+}
+function eliminarSucursal(id){
+  sucursales = sucursales.filter(s => s.id !== id);
+  renderSucursales();
+}
+function renderSucursales(){
+  const cont = document.getElementById('listaSucursales');
+  cont.innerHTML = sucursales.map((s, i) => `
+    <div class="tarjeta-item">
+      <span class="num">Sucursal ${i+1}</span>
+      ${sucursales.length > 1 ? `<button type="button" class="eliminar" onclick="eliminarSucursal(${s.id})">✕</button>` : ''}
+      <div class="grid2">
+        <div class="campo"><label>Nombre</label><input type="text" placeholder="Ej: Casa Central" value="${s.nombre}" oninput="sucursales[${sucursales.indexOf(s)}].nombre=this.value"></div>
+        <div class="campo"><label>Barrio / Ciudad</label><input type="text" value="${s.barrio}" oninput="sucursales[${sucursales.indexOf(s)}].barrio=this.value"></div>
+      </div>
+      <div class="campo"><label>Dirección</label><input type="text" value="${s.direccion}" oninput="sucursales[${sucursales.indexOf(s)}].direccion=this.value"></div>
+      <div class="campo">
+        <label>Días de atención</label>
+        <div class="dias">
+          ${DIAS.map((d, idx) => `<div class="dia-chip ${s.dias.includes(idx)?'activo':''}" onclick="toggleDiaSucursal(${s.id}, ${idx})">${d}</div>`).join('')}
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="campo"><label>Hora de apertura</label><input type="time" value="${s.apertura}" oninput="sucursales[${sucursales.indexOf(s)}].apertura=this.value"></div>
+        <div class="campo"><label>Hora de cierre</label><input type="time" value="${s.cierre}" oninput="sucursales[${sucursales.indexOf(s)}].cierre=this.value"></div>
+      </div>
+      <div class="campo">
+        <label>Duración de cada turno</label>
+        <select onchange="sucursales[${sucursales.indexOf(s)}].duracion=this.value">
+          ${DURACIONES.map(d => `<option ${d===s.duracion?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  `).join('');
+}
+function toggleDiaSucursal(id, idx){
+  const s = sucursales.find(x => x.id === id);
+  const pos = s.dias.indexOf(idx);
+  if(pos === -1) s.dias.push(idx); else s.dias.splice(pos,1);
+  renderSucursales();
+}
+
+function agregarServicio(){
+  const id = contadorServ++;
+  servicios.push({ id, nombre:"", duracion:"30 min", precio:"" });
+  renderServicios();
+}
+function eliminarServicio(id){
+  servicios = servicios.filter(s => s.id !== id);
+  renderServicios();
+}
+function renderServicios(){
+  const cont = document.getElementById('listaServicios');
+  cont.innerHTML = servicios.map((s, i) => `
+    <div class="tarjeta-item">
+      <span class="num">Servicio ${i+1}</span>
+      ${servicios.length > 1 ? `<button type="button" class="eliminar" onclick="eliminarServicio(${s.id})">✕</button>` : ''}
+      <div class="campo"><label>Nombre del servicio</label><input type="text" placeholder="Ej: Corte + color" value="${s.nombre}" oninput="servicios[${servicios.indexOf(s)}].nombre=this.value"></div>
+      <div class="grid2">
+        <div class="campo">
+          <label>Duración</label>
+          <select onchange="servicios[${servicios.indexOf(s)}].duracion=this.value">
+            ${DURACIONES.map(d => `<option ${d===s.duracion?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="campo"><label>Precio <span class="ayuda">(opcional)</span></label><input type="text" placeholder="Opcional" value="${s.precio}" oninput="servicios[${servicios.indexOf(s)}].precio=this.value"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btnAgregarSucursal').addEventListener('click', agregarSucursal);
+  document.getElementById('btnAgregarServicio').addEventListener('click', agregarServicio);
+  agregarSucursal();
+  agregarServicio();
+
+  document.getElementById('colorPrimario').addEventListener('input', e => document.getElementById('colorPrimarioTxt').textContent = e.target.value.toUpperCase());
+  document.getElementById('colorSecundario').addEventListener('input', e => document.getElementById('colorSecundarioTxt').textContent = e.target.value.toUpperCase());
+
+  document.getElementById('formOnboarding').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const datos = {
+      contactoNombre: document.getElementById('contactoNombre').value.trim(),
+      contactoWhatsapp: document.getElementById('contactoWhatsapp').value.trim(),
+      contactoEmail: document.getElementById('contactoEmail').value.trim(),
+      negocioNombre: document.getElementById('negocioNombre').value.trim(),
+      negocioRubro: document.getElementById('negocioRubro').value,
+      negocioTagline: document.getElementById('negocioTagline').value.trim(),
+      negocioInstagram: document.getElementById('negocioInstagram').value.trim(),
+      negocioFacebook: document.getElementById('negocioFacebook').value.trim(),
+      colorPrimario: document.getElementById('colorPrimario').value,
+      colorSecundario: document.getElementById('colorSecundario').value,
+      sucursales: sucursales.map(s => ({ nombre:s.nombre, direccion:s.direccion, barrio:s.barrio, dias:s.dias, apertura:s.apertura, cierre:s.cierre, duracion:s.duracion })),
+      servicios: servicios.map(s => ({ nombre:s.nombre, duracion:s.duracion, precio:s.precio })),
+      equipoCantidad: document.getElementById('equipoCantidad').value,
+      equipoNombres: document.getElementById('equipoNombres').value.trim(),
+      plan: document.querySelector('input[name="plan"]:checked').value,
+      fecha: new Date().toISOString()
+    };
+
+    guardarCliente(datos);
+
+    document.getElementById('formOnboarding').style.display = 'none';
+    document.getElementById('pantallaGracias').style.display = 'block';
+    document.getElementById('graciasNombre').textContent = datos.negocioNombre;
+
+    const msg = `Hola! Ya completé el formulario de alta para ${datos.negocioNombre}. Te mando el logo por acá 📎`;
+    document.getElementById('btnGraciasWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(msg)}`;
+    window.scrollTo(0,0);
+  });
+});
+
+function guardarCliente(datos){
+  try{
+    const clientes = JSON.parse(localStorage.getItem('turnico_clientes') || '[]');
+    clientes.push(datos);
+    localStorage.setItem('turnico_clientes', JSON.stringify(clientes));
+  }catch(e){}
+
+  if(CONFIG.clientesWebhookUrl){
+    fetch(CONFIG.clientesWebhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(datos)
+    }).catch(() => {});
+  }
+  console.log('[TurniCO] Nueva alta de cliente:', datos);
+}
+</script>
+
+</body>
+</html>
